@@ -1,20 +1,20 @@
-# 1. Gunakan image Python dasar yang stabil
+# Gunakan image Python dasar yang stabil
 FROM python:3.11-slim
 
-# 2. Instal dependensi sistem yang hilang (OpenMP/libgomp1)
-# Ini adalah langkah KRITIS untuk LightGBM
+# Instal dependensi sistem yang hilang (libgomp1)
+# Ini KRUSIAL untuk LightGBM agar tidak crash.
 RUN apt-get update && apt-get install -y \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# 3. Atur direktori kerja
+# Atur direktori kerja
 WORKDIR /app
 
-# 4. Salin kode & model yang dibutuhkan ke dalam container
+# Salin semua file (termasuk main.py dan folder saved_models)
 COPY . /app
 
-# 5. Instal dependensi Python
+# Instal dependensi Python (dari requirements.txt)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 6. Jalankan API menggunakan Uvicorn
+# Jalankan API menggunakan Uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
